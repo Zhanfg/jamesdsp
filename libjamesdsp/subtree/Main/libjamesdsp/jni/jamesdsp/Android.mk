@@ -2,6 +2,12 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libjamesdsp
 LOCAL_PRELINK_MODULE := false
+# Android 16 / Treble: the effect is loaded by the vendor audio effect factory.
+# Install beside the existing vendor soundfx libraries instead of replacing any
+# system/vendor audio configuration at runtime.
+LOCAL_VENDOR_MODULE := true
+LOCAL_MODULE_RELATIVE_PATH := soundfx
+LOCAL_MULTILIB := both
 LOCAL_SRC_FILES := \
 	cpthread.c \
 	jdsp/generalDSP/spectralInterpolatorFloat.c \
@@ -89,19 +95,19 @@ LOCAL_SRC_FILES := \
 	jdsp/jdspController.c \
 	jamesdsp.c \
 # terminator
-LOCAL_LDLIBS := -llog
+LOCAL_SHARED_LIBRARIES := liblog
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
-LOCAL_CPPFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -Ofast -march=armv7-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
-LOCAL_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -Ofast -march=armv7-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CPPFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -O3 -march=armv7-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -O3 -march=armv7-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
 else ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
-LOCAL_CPPFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -Ofast -march=armv8-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
-LOCAL_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -Ofast -march=armv8-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CPPFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -O3 -march=armv8-a -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -O3 -march=armv8-a -mfpu=neon -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
 else ifeq ($(TARGET_ARCH_ABI), x86)
-LOCAL_CPPFLAGS += -ffunction-sections -fdata-sections -Ofast -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
-LOCAL_CFLAGS += -ffunction-sections -fdata-sections -Ofast -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CPPFLAGS += -ffunction-sections -fdata-sections -O3 -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CFLAGS += -ffunction-sections -fdata-sections -O3 -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
 else ifeq ($(TARGET_ARCH_ABI), armeabi)
-LOCAL_CPPFLAGS += -ffunction-sections -fdata-sections -Ofast -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
-LOCAL_CFLAGS += -ffunction-sections -fdata-sections -Ofast -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CPPFLAGS += -ffunction-sections -fdata-sections -O3 -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
+LOCAL_CFLAGS += -ffunction-sections -fdata-sections -O3 -ftree-vectorize -fvisibility=hidden -DJAMESDSP_REFERENCE_IMPL #-DDEBUG
 endif
 LOCAL_LDFLAGS += -Wl,--gc-sections,--exclude-libs,ALL
 include $(BUILD_SHARED_LIBRARY)
